@@ -1,0 +1,19 @@
+{
+  "projectName": "booking-calendar",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "pnpm",
+  "tailwind": true,
+  "addOnOptions": {},
+  "git": true,
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "eslint",
+    "nitro",
+    "start",
+    "form",
+    "shadcn",
+    "tanstack-query"
+  ]
+}
