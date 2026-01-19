@@ -13,15 +13,32 @@ export type TimeFormat = '12h' | '24h';
 /**
  * Format a ZonedDateTime to time string based on the selected format
  * Uses Intl.DateTimeFormat for proper localization
+ *
+ * @param dateTime - ZonedDateTime object or datetime string
+ * @param format - Time format ('12h' or '24h')
+ * @param locale - Locale string for formatting
+ * @param timezone - Optional timezone to apply to plain datetime strings
  */
 export function formatTime(
   dateTime: ZonedDateTime | string,
   format: TimeFormat = '12h',
-  locale: string = 'es-ES'
+  locale: string = 'es-ES',
+  timezone?: string
 ): string {
   try {
-    const dt =
-      typeof dateTime === 'string' ? parseZonedDateTime(dateTime) : dateTime;
+    let dt: ZonedDateTime;
+
+    if (typeof dateTime === 'string') {
+      // If timezone is provided and the string doesn't include timezone annotation,
+      // add it before parsing
+      if (timezone && !dateTime.includes('[')) {
+        dt = parseZonedDateTime(`${dateTime}[${timezone}]`);
+      } else {
+        dt = parseZonedDateTime(dateTime);
+      }
+    } else {
+      dt = dateTime;
+    }
 
     return dt.toDate().toLocaleTimeString(locale, {
       hour: 'numeric',

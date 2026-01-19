@@ -41,7 +41,9 @@ export function useBookingSearchParams(): UseBookingSearchParamsReturn {
   };
 
   const setSelectedSlot = (slot: string | undefined) => {
-    updateSearchParams({ slot });
+    // Strip timezone annotation if present (e.g. "2026-01-20T16:00:00[Europe/Oslo]" -> "2026-01-20T16:00:00")
+    const cleanSlot = slot?.replace(/\[.*\]$/, '');
+    updateSearchParams({ slot: cleanSlot });
   };
 
   const setLayout = (newLayout: 'month' | 'week' | 'day') => {

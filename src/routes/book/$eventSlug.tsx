@@ -6,7 +6,8 @@ import { EventData } from '../../lib/booking/types';
 const bookingSearchSchema = z.object({
   layout: z.enum(['month', 'week', 'day']).optional().default('month'),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  slot: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/).optional(),
+  // Slot format: ISO datetime without timezone (e.g. "2026-01-20T16:00:00")
+  slot: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/).optional(),
 });
 
 // Mock event data - in a real app, this would be fetched from an API

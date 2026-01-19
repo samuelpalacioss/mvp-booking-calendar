@@ -9,7 +9,7 @@ export interface EventData {
 }
 
 export interface TimeSlot {
-  startTime: string; // "09:00" or ISO datetime
+  startTime: string; // ISO datetime without timezone (e.g. "2026-01-20T16:00:00")
   endTime: string;
   available: boolean;
 }
@@ -17,5 +17,5 @@ export interface TimeSlot {
 export interface BookingSearchParams {
   layout?: 'month' | 'week' | 'day';
   date?: string; // "2026-01-18"
-  slot?: string; // ISO datetime UTC
+  slot?: string; // ISO datetime without timezone (e.g. "2026-01-20T16:00:00")
 }

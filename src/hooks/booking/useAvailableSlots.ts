@@ -65,13 +65,13 @@ function generateMockSlots(date: CalendarDate, timezone: string): TimeSlot[] {
   }
 
   // Generate slots from the defined time slots for this date
+  // Store slots without timezone annotation - timezone is managed separately in localStorage
   const slots: TimeSlot[] = scheduleEntry.timeSlots.map(timeStr => {
-    // Create ZonedDateTime string format: YYYY-MM-DDTHH:mm:ss[Timezone]
-    const zonedDateTime = `${dateStr}T${timeStr}:00[${timezone}]`;
+    const dateTime = `${dateStr}T${timeStr}:00`;
 
     return {
-      startTime: zonedDateTime,
-      endTime: zonedDateTime, // In real app, this would be +duration
+      startTime: dateTime,
+      endTime: dateTime, // In real app, this would be +duration
       available: true, // All slots in the schedule are available
     };
   });

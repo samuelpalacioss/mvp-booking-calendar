@@ -10,6 +10,7 @@ interface TimeSlotsPanelProps {
   selectedSlot?: string;
   slots: TimeSlot[];
   onSlotSelect: (slot: string | undefined) => void;
+  timezone: string;
   isLoading?: boolean;
   error?: Error | null;
   onRetry?: () => void;
@@ -21,6 +22,7 @@ export function TimeSlotsPanel({
   selectedSlot,
   slots,
   onSlotSelect,
+  timezone,
   isLoading = false,
   error,
   onRetry,
@@ -67,12 +69,12 @@ export function TimeSlotsPanel({
           </p>
         ) : (
           slots.map((slot) => {
-            const displayTime = formatTime(slot.startTime, timeFormat, locale);
+            const displayTime = formatTime(slot.startTime, timeFormat, locale, timezone);
             return (
               <TimeSlotButton
                 key={slot.startTime}
                 slot={slot}
-      
+
                 isSelected={selectedSlot === slot.startTime}
                 onClick={() =>
                   onSlotSelect(

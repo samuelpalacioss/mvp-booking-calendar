@@ -88,6 +88,7 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
               selectedSlot={selectedSlot}
               slots={slots}
               onSlotSelect={setSelectedSlot}
+              timezone={timezone}
               isLoading={isSlotsLoading}
               error={slotsError}
               onRetry={refetchSlots}
