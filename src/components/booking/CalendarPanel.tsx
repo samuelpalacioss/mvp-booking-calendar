@@ -19,6 +19,8 @@ interface CalendarPanelProps {
   availableDates?: Set<string>;
   locale?: string;
   onVisibleMonthChange?: (year: number, month: number) => void;
+  showAvailabilityDots?: boolean;
+  availabilityCount?: Map<string, number>;
 }
 
 export function CalendarPanel({
@@ -27,6 +29,8 @@ export function CalendarPanel({
   availableDates = new Set(),
   locale = 'es-ES',
   onVisibleMonthChange,
+  showAvailabilityDots = false,
+  availabilityCount = new Map(),
 }: CalendarPanelProps) {
   // Track previous visible month to detect changes
   const prevVisibleMonthRef = useRef<{ year: number; month: number } | null>(null);
@@ -168,6 +172,17 @@ export function CalendarPanel({
               const isMoreThan10DaysPast = isMoreThan10DaysAgo(date);
               const isPast = isDateInPast(date);
               const isAvailable = availableDates.has(dateStr);
+              const slotCount = availabilityCount.get(dateStr) || 0;
+
+              // Determine number of dots to show (0-3 based on availability)
+              const getDotsCount = (count: number) => {
+                if (count === 0) return 0;
+                if (count <= 2) return 1;
+                if (count <= 5) return 2;
+                return 3;
+              };
+
+              const dotsCount = getDotsCount(slotCount);
               
               // Hide dates that don't belong to the visible month
               const visibleMonth = state.visibleRange.start.month;
@@ -205,8 +220,18 @@ export function CalendarPanel({
                   {({ formattedDate, isSelected }) => (
                     <div className="flex h-full flex-col items-center justify-center">
                       <span>{formattedDate}</span>
-                      {isSelected && (
+                      {/* {isSelected && (
                         <span className="mt-0.5 h-1 w-1 rounded-full bg-zinc-900"></span>
+                      )} */}
+                      {showAvailabilityDots && !isSelected && dotsCount > 0 && (
+                        <div className="mt-1 flex gap-0.5">
+                          {Array.from({ length: dotsCount }).map((_, i) => (
+                            <span
+                              key={i}
+                              className="h-1 w-1 rounded-full bg-emerald-500"
+                            ></span>
+                          ))}
+                        </div>
                       )}
                     </div>
                   )}

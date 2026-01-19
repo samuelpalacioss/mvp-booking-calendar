@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { EventData } from '../../lib/booking/types';
 import { useBookingSearchParams } from '../../hooks/booking/useBookingSearchParams';
 import { useTimezone } from '../../hooks/booking/useTimezone';
-import { useAvailableSlots, useAvailableDates } from '../../hooks/booking/useAvailableSlots';
+import { useAvailableSlots, useAvailableDates, useAvailabilityCount } from '../../hooks/booking/useAvailableSlots';
 import { EventInfoPanel } from './EventInfoPanel';
 import { CalendarPanel } from './CalendarPanel';
 import { TimeSlotsPanel } from './TimeSlotsPanel';
@@ -49,6 +49,11 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
     error: datesError,
   } = useAvailableDates(eventSlug, visibleMonth.year, visibleMonth.month);
 
+  // Fetch availability count for the visible month to show dots
+  const {
+    data: availabilityCount = new Map(),
+  } = useAvailabilityCount(eventSlug, visibleMonth.year, visibleMonth.month);
+
   return (
     <div className="min-h-screen bg-zinc-950">
       <div className="mx-auto max-w-7xl">
@@ -77,6 +82,8 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
               selectedDate={selectedDate}
               onDateChange={setSelectedDate}
               availableDates={availableDates}
+              availabilityCount={availabilityCount}
+              showAvailabilityDots={true}
               onVisibleMonthChange={(year, month) => {
                 setVisibleMonth({ year, month });
               }}

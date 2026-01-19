@@ -25,7 +25,7 @@ const MOCK_USER_SCHEDULE: MockUserSchedule[] = [
   { date: '2026-01-22', timeSlots: ['09:30', '10:00', '11:00', '12:30', '15:00'] },
   { date: '2026-01-23', timeSlots: ['10:00', '11:30', '13:00', '14:30', '16:00'] },
   { date: '2026-01-24', timeSlots: ['09:00', '10:30', '12:00', '13:30', '15:00'] },
-  { date: '2026-01-25', timeSlots: ['09:30', '11:00', '12:30', '14:00', '15:30'] },
+  { date: '2026-01-25', timeSlots: ['09:30', '11:00'] },
   { date: '2026-01-26', timeSlots: ['10:00', '11:30', '13:00', '14:30'] },
   { date: '2026-01-27', timeSlots: ['09:00', '10:30', '12:00', '15:00', '16:00'] },
   { date: '2026-01-28', timeSlots: ['09:30', '11:00', '13:30', '14:30'] },
@@ -123,5 +123,35 @@ export function useAvailableDates(eventSlug: string, year: number, month: number
       return generateAvailableDates(year, month);
     },
     staleTime: 1000 * 60 * 10, // 10 minutes
+  });
+}
+
+// Generate availability count map for the month
+// Returns a Map with date strings as keys and slot counts as values
+function generateAvailabilityCount(year: number, month: number): Map<string, number> {
+  const countMap = new Map<string, number>();
+
+  // Filter schedule entries for the requested month/year
+  MOCK_USER_SCHEDULE.forEach(entry => {
+    const entryDate = new Date(entry.date);
+    // Check if this entry belongs to the requested month/year
+    if (entryDate.getFullYear() === year && entryDate.getMonth() + 1 === month) {
+      countMap.set(entry.date, entry.timeSlots.length);
+    }
+  });
+
+  return countMap;
+}
+
+export function useAvailabilityCount(eventSlug: string, year: number, month: number) {
+  return useQuery({
+    queryKey: ['availabilityCount', eventSlug, year, month],
+    queryFn: async () => {
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      return generateAvailabilityCount(year, month);
+    },
+    staleTime: 1000 * 60 * 10, // 5 minutes
   });
 }
