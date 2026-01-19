@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { EventData } from '../../lib/booking/types';
 import { useBookingSearchParams } from '../../hooks/booking/useBookingSearchParams';
 import { useTimezone } from '../../hooks/booking/useTimezone';
@@ -18,15 +17,11 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
     selectedSlot,
     setSelectedDate,
     setSelectedSlot,
+    visibleMonth,
+    setVisibleMonth,
   } = useBookingSearchParams();
 
   const { timezone, setTimezone } = useTimezone();
-
-  // Track visible month in calendar to fetch available dates for the correct month
-  const [visibleMonth, setVisibleMonth] = useState<{ year: number; month: number }>({
-    year: selectedDate.year,
-    month: selectedDate.month,
-  });
 
   // Fetch available slots for selected date
   const {
@@ -84,9 +79,7 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
               availableDates={availableDates}
               availabilityCount={availabilityCount}
               showAvailabilityDots={true}
-              onVisibleMonthChange={(year, month) => {
-                setVisibleMonth({ year, month });
-              }}
+              onVisibleMonthChange={setVisibleMonth}
             />
 
             {/* Right Panel: Time Slots */}

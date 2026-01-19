@@ -153,3 +153,42 @@ export function isMoreThan10DaysAgo(date: CalendarDate): boolean {
   const tenDaysAgo = todayDate.subtract({ days: 10 });
   return date.compare(tenDaysAgo) < 0;
 }
+
+/**
+ * Convert year and month to YYYY-MM format string
+ * @param year - Full year (e.g., 2026)
+ * @param month - Month (1-12)
+ * @returns YYYY-MM format string (e.g., "2026-01")
+ */
+export function yearMonthToString(year: number, month: number): string {
+  const monthStr = month.toString().padStart(2, '0');
+  return `${year}-${monthStr}`;
+}
+
+/**
+ * Parse YYYY-MM format string to { year, month }
+ * Returns null if parsing fails or month is invalid
+ * @param monthStr - YYYY-MM format string (e.g., "2026-01")
+ * @returns { year, month } or null if invalid
+ */
+export function parseYearMonth(monthStr: string): { year: number; month: number } | null {
+  const match = monthStr.match(/^(\d{4})-(\d{2})$/);
+  if (!match) return null;
+
+  const year = parseInt(match[1], 10);
+  const month = parseInt(match[2], 10);
+
+  // Validate month range (1-12)
+  if (month < 1 || month > 12) return null;
+
+  return { year, month };
+}
+
+/**
+ * Extract year-month from a CalendarDate
+ * @param date - CalendarDate object
+ * @returns YYYY-MM format string (e.g., "2026-01")
+ */
+export function calendarDateToYearMonth(date: CalendarDate): string {
+  return yearMonthToString(date.year, date.month);
+}

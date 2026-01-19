@@ -18,4 +18,5 @@ export interface BookingSearchParams {
   layout?: 'month' | 'week' | 'day';
   date?: string; // "2026-01-18"
   slot?: string; // ISO datetime without timezone (e.g. "2026-01-20T16:00:00")
+  month?: string; // "2026-01" (YYYY-MM format)
 }
