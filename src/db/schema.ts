@@ -41,6 +41,17 @@ export const bookingStatusEnum = pgEnum('booking_status', [
 // Currency enum for payments
 export const currencyEnum = pgEnum('currency', ['USD', 'BS', 'EUR']);
 
+// Day of week enum (0 = Sunday, 6 = Saturday)
+export const dayOfWeekEnum = pgEnum('day_of_week', [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday'
+]);
+
 // ============================================================================
 // INDEPENDENT TABLES (No Foreign Keys)
 // ============================================================================
@@ -289,6 +300,51 @@ export const userCustomers = pgTable(
   })
 );
 
+/**
+ * Availability Schedules Table
+ * Defines when users or organizations are available for bookings
+ *
+ * Ownership Constraint: Exactly one of userId or organizationId must be set (not both, not neither)
+ *
+ * Scope:
+ * - If eventId is NULL: Schedule applies to ALL events for the user/organization (global availability)
+ * - If eventId is set: Schedule applies ONLY to that specific event (overrides global availability)
+ *
+ * Use Cases:
+ * 1. Global: User works Mon-Fri 9-5 (eventId = null, applies to all their events)
+ * 2. Event-specific: "Consultation" event only available Tue-Thu 2-4 (eventId set, overrides global)
+ */
+export const availabilitySchedules = pgTable(
+  'AvailabilitySchedule',
+  {
+    id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
+    userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }), // nullable - for personal schedules
+    organizationId: integer('organization_id').references(() => organizations.id, {
+      onDelete: 'cascade',
+    }), // nullable - for org schedules
+    eventId: varchar('event_id', { length: 255 }).references(() => events.id, {
+      onDelete: 'cascade',
+    }), // nullable - if null, applies to all events; if set, only to this event
+    dayOfWeek: dayOfWeekEnum('day_of_week').notNull(), // monday, tuesday, etc.
+    startTime: time('start_time').notNull(), // e.g., '09:00:00'
+    endTime: time('end_time').notNull(), // e.g., '17:00:00'
+    validFrom: date('valid_from'), // nullable - if null, always valid from the beginning
+    validUntil: date('valid_until'), // nullable - if null, ongoing indefinitely
+    isActive: boolean('is_active').default(true).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdIdx: index('AvailabilitySchedule_user_id_idx').on(table.userId),
+    organizationIdIdx: index('AvailabilitySchedule_organization_id_idx').on(
+      table.organizationId
+    ),
+    eventIdIdx: index('AvailabilitySchedule_event_id_idx').on(table.eventId),
+    dayOfWeekIdx: index('AvailabilitySchedule_day_of_week_idx').on(table.dayOfWeek),
+    activeIdx: index('AvailabilitySchedule_active_idx').on(table.isActive),
+  })
+);
+
 // ============================================================================
 // DRIZZLE RELATIONS (for relational queries)
 // ============================================================================
@@ -304,6 +360,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     references: [clients.id],
   }),
   userCustomers: many(userCustomers),
+  availabilitySchedules: many(availabilitySchedules),
 }));
 
 export const clientsRelations = relations(clients, ({ one }) => ({
@@ -316,6 +373,7 @@ export const clientsRelations = relations(clients, ({ one }) => ({
 export const organizationsRelations = relations(organizations, ({ many }) => ({
   users: many(users),
   events: many(events),
+  availabilitySchedules: many(availabilitySchedules),
 }));
 
 export const eventsRelations = relations(events, ({ one, many }) => ({
@@ -328,6 +386,7 @@ export const eventsRelations = relations(events, ({ one, many }) => ({
     references: [organizations.id],
   }),
   eventOptions: many(eventOptions),
+  availabilitySchedules: many(availabilitySchedules),
 }));
 
 export const eventOptionsRelations = relations(eventOptions, ({ one, many }) => ({
@@ -397,6 +456,21 @@ export const userCustomersRelations = relations(userCustomers, ({ one }) => ({
   }),
 }));
 
+export const availabilitySchedulesRelations = relations(availabilitySchedules, ({ one }) => ({
+  user: one(users, {
+    fields: [availabilitySchedules.userId],
+    references: [users.id],
+  }),
+  organization: one(organizations, {
+    fields: [availabilitySchedules.organizationId],
+    references: [organizations.id],
+  }),
+  event: one(events, {
+    fields: [availabilitySchedules.eventId],
+    references: [events.id],
+  }),
+}));
+
 // ============================================================================
 // TYPESCRIPT TYPES
 // ============================================================================
@@ -413,6 +487,7 @@ export type Booking = typeof bookings.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type Person = typeof persons.$inferSelect;
 export type UserCustomer = typeof userCustomers.$inferSelect;
+export type AvailabilitySchedule = typeof availabilitySchedules.$inferSelect;
 
 // Insert types (for writing to DB)
 export type NewUser = typeof users.$inferInsert;
@@ -426,3 +501,4 @@ export type NewBooking = typeof bookings.$inferInsert;
 export type NewPayment = typeof payments.$inferInsert;
 export type NewPerson = typeof persons.$inferInsert;
 export type NewUserCustomer = typeof userCustomers.$inferInsert;
+export type NewAvailabilitySchedule = typeof availabilitySchedules.$inferInsert;

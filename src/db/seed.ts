@@ -13,6 +13,7 @@ import {
   bookings,
   payments,
   userCustomers,
+  availabilitySchedules,
 } from "./schema";
 
 async function seed() {
@@ -29,6 +30,7 @@ async function seed() {
     await db.delete(bookings);
     await db.delete(prices);
     await db.delete(eventOptions);
+    await db.delete(availabilitySchedules);
     await db.delete(events);
     await db.delete(userCustomers);
     await db.delete(users);
@@ -443,7 +445,296 @@ async function seed() {
     console.log(`✅ Created ${userCustomersData.length} user-customer relationships`);
 
     // ============================================================================
-    // 10. BOOKINGS
+    // 10. AVAILABILITY SCHEDULES
+    // ============================================================================
+    console.log("📅 Seeding availability schedules...");
+    const availabilitySchedulesData = await db
+      .insert(availabilitySchedules)
+      .values([
+        // ========== GLOBAL AVAILABILITY - María (Personal User) ==========
+        // Monday to Friday, 9:00 - 17:00
+        {
+          userId: usersData[0].id,
+          organizationId: null,
+          eventId: null, // Global - applies to all her events
+          dayOfWeek: "monday",
+          startTime: "09:00:00",
+          endTime: "17:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[0].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "tuesday",
+          startTime: "09:00:00",
+          endTime: "17:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[0].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "wednesday",
+          startTime: "09:00:00",
+          endTime: "17:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[0].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "thursday",
+          startTime: "09:00:00",
+          endTime: "17:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[0].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "friday",
+          startTime: "09:00:00",
+          endTime: "17:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+
+        // ========== GLOBAL AVAILABILITY - Carlos (Personal User) ==========
+        // Monday to Friday, 10:00 - 18:00
+        {
+          userId: usersData[1].id,
+          organizationId: null,
+          eventId: null, // Global
+          dayOfWeek: "monday",
+          startTime: "10:00:00",
+          endTime: "18:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[1].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "tuesday",
+          startTime: "10:00:00",
+          endTime: "18:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[1].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "wednesday",
+          startTime: "10:00:00",
+          endTime: "18:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[1].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "thursday",
+          startTime: "10:00:00",
+          endTime: "18:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: usersData[1].id,
+          organizationId: null,
+          eventId: null,
+          dayOfWeek: "friday",
+          startTime: "10:00:00",
+          endTime: "18:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+
+        // ========== ORGANIZATIONAL AVAILABILITY - Centro Clínico CaracasMed ==========
+        // Monday to Saturday, 8:00 - 20:00 (Extended hours)
+        {
+          userId: null,
+          organizationId: organizationsData[0].id,
+          eventId: null, // Global for all clinic events
+          dayOfWeek: "monday",
+          startTime: "08:00:00",
+          endTime: "20:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[0].id,
+          eventId: null,
+          dayOfWeek: "tuesday",
+          startTime: "08:00:00",
+          endTime: "20:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[0].id,
+          eventId: null,
+          dayOfWeek: "wednesday",
+          startTime: "08:00:00",
+          endTime: "20:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[0].id,
+          eventId: null,
+          dayOfWeek: "thursday",
+          startTime: "08:00:00",
+          endTime: "20:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[0].id,
+          eventId: null,
+          dayOfWeek: "friday",
+          startTime: "08:00:00",
+          endTime: "20:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[0].id,
+          eventId: null,
+          dayOfWeek: "saturday",
+          startTime: "08:00:00",
+          endTime: "14:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+
+        // ========== ORGANIZATIONAL AVAILABILITY - Pilates Caracas ==========
+        // Monday to Saturday, 6:00 - 21:00 (Early morning to evening classes)
+        {
+          userId: null,
+          organizationId: organizationsData[1].id,
+          eventId: null,
+          dayOfWeek: "monday",
+          startTime: "06:00:00",
+          endTime: "21:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[1].id,
+          eventId: null,
+          dayOfWeek: "tuesday",
+          startTime: "06:00:00",
+          endTime: "21:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[1].id,
+          eventId: null,
+          dayOfWeek: "wednesday",
+          startTime: "06:00:00",
+          endTime: "21:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[1].id,
+          eventId: null,
+          dayOfWeek: "thursday",
+          startTime: "06:00:00",
+          endTime: "21:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[1].id,
+          eventId: null,
+          dayOfWeek: "friday",
+          startTime: "06:00:00",
+          endTime: "21:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[1].id,
+          eventId: null,
+          dayOfWeek: "saturday",
+          startTime: "07:00:00",
+          endTime: "15:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+
+        // ========== EVENT-SPECIFIC OVERRIDE - Editorial Anagrama Reunión ==========
+        // Only Tuesday and Thursday afternoons (more restrictive than org-wide)
+        {
+          userId: null,
+          organizationId: organizationsData[2].id,
+          eventId: eventsData[4].id, // anagrama-reunion event
+          dayOfWeek: "tuesday",
+          startTime: "14:00:00",
+          endTime: "18:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+        {
+          userId: null,
+          organizationId: organizationsData[2].id,
+          eventId: eventsData[4].id,
+          dayOfWeek: "thursday",
+          startTime: "14:00:00",
+          endTime: "18:00:00",
+          validFrom: null,
+          validUntil: null,
+          isActive: true,
+        },
+      ])
+      .returning();
+    console.log(`✅ Created ${availabilitySchedulesData.length} availability schedules`);
+
+    // ============================================================================
+    // 11. BOOKINGS
     // ============================================================================
     console.log("📋 Seeding bookings...");
     const bookingsData = await db
@@ -513,7 +804,7 @@ async function seed() {
     console.log(`✅ Created ${bookingsData.length} bookings`);
 
     // ============================================================================
-    // 11. PAYMENTS
+    // 12. PAYMENTS
     // ============================================================================
     console.log("💳 Seeding payments...");
     const paymentsData = await db
@@ -576,6 +867,7 @@ async function seed() {
     console.log(`   Event Options: ${eventOptionsData.length}`);
     console.log(`   Prices: ${pricesData.length}`);
     console.log(`   User-Customer Links: ${userCustomersData.length}`);
+    console.log(`   Availability Schedules: ${availabilitySchedulesData.length}`);
     console.log(`   Bookings: ${bookingsData.length}`);
     console.log(`   Payments: ${paymentsData.length}`);
   } catch (error) {
