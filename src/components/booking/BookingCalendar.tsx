@@ -6,6 +6,7 @@ import { useAvailableSlots, useAvailableDates, useAvailabilityCount } from '../.
 import { EventInfoPanel } from './EventInfoPanel';
 import { CalendarPanel } from './CalendarPanel';
 import { TimeSlotsPanel } from './TimeSlotsPanel';
+import { BookingConfirmation } from './BookingConfirmation';
 
 interface BookingCalendarProps {
   eventSlug: string;
@@ -21,6 +22,9 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
   } = useBookingSearchParams();
 
   const { timezone, setTimezone } = useTimezone();
+
+  // Booking step: 1 = select date/time, 2 = confirmation/file upload
+  const [step, setStep] = useState<1 | 2>(1);
 
   // Track visible month in calendar to fetch available dates for the correct month
   const [visibleMonth, setVisibleMonth] = useState<{ year: number; month: number }>({
@@ -54,6 +58,20 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
     data: availabilityCount = new Map(),
   } = useAvailabilityCount(eventSlug, visibleMonth.year, visibleMonth.month);
 
+  // Step 2: Show confirmation with file upload
+  if (step === 2 && selectedSlot) {
+    return (
+      <BookingConfirmation
+        event={event}
+        selectedDate={selectedDate}
+        selectedSlot={selectedSlot}
+        timezone={timezone}
+        onBack={() => setStep(1)}
+      />
+    );
+  }
+
+  // Step 1: Calendar and time slot selection
   return (
     <div className="min-h-screen bg-zinc-950">
       <div className="mx-auto max-w-7xl">
@@ -101,6 +119,18 @@ export function BookingCalendar({ eventSlug, event }: BookingCalendarProps) {
               onRetry={refetchSlots}
             />
           </div>
+
+          {/* Next button when slot is selected */}
+          {selectedSlot && (
+            <div className="border-t border-zinc-800 p-4 md:p-6">
+              <button
+                onClick={() => setStep(2)}
+                className="w-full rounded-lg bg-white px-6 py-3 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:w-auto md:ml-auto md:block"
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
